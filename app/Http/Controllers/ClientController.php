@@ -6,17 +6,42 @@ use App\Http\Requests\StoreClientRequest;
 use App\Http\Requests\UpdateClientRequest;
 use App\Models\Account;
 use App\Models\Client;
+use Database\Seeders\ClientSeeder;
+use Illuminate\Http\Request;
 
 class ClientController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $clients = Client::all();
+        // $clients = Client::orderBy('lastname', 'desc')->get();
+        // $clients = Client::all();
+        $sortBy = $request->query('sort', '');
+        $clients = Client::query();
+
+        $clients = match ($sortBy) {
+            'name_asc' => $clients->orderBy('name'),
+            'name_desc' => $clients->orderByDesc('name'),
+            'lastname_asc' => $clients->orderBy('lastname'),
+            'lastname_desc' => $clients->orderByDesc('lastname'),
+            'balance_asc' => $clients->orderBy('balance'),
+            'balance_desc' => $clients->orderByDesc('balance'),
+            'accounts_asc' => $clients->withCount('accounts')->orderBy('accounts_count'),
+            'accounts_desc' => $clients->withCount('accounts')->orderByDesc('accounts_count'),
+            default => $clients->orderBy('lastname'),
+        };
+
+        $clients = $clients->get();
+
+        $sorts = Client::getSorts();
+        $sortBy = $request->query('sort', '');
+
         return view('clients.index', [
             'clients' => $clients,
+            'sorts' => $sorts,
+            'sortBy' => $sortBy
         ]);
     }
 

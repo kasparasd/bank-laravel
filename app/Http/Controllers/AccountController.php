@@ -10,6 +10,13 @@ use App\Models\Client;
 class AccountController extends Controller
 {
     /**
+     * Return form to add money to account
+     */
+    public function processFunds()
+    {
+        return view('accounts.processFunds');
+    }
+    /**
      * Display a listing of the resource.
      */
     public function index()

@@ -3,23 +3,28 @@
 @section('content')
     <div style="width: 90%; margin: auto;">
 
+
         <form action="" method="get">
-            <select name="sort" onchange="this.form.submit()">
-                <option value="" selected hidden disabled>
-                    {{-- <?php
-                    if (isset($_GET['sort'])) {
-                        echo $_GET['sort'];
-                    } else {
-                        echo 'Sort here';
-                    } ?> --}}
-                </option>
-                <option value="name a-z">name a-z</option>
-                <option value="name z-a">name z-a</option>
-                <option value="last name a-z">last name a-z</option>
-                <option value="last name z-a">last name z-a</option>
-                <option value="balance 0-9">balance 0-9</option>
-                <option value="balance 9-0">balance 9-0</option>
-            </select>
+            <div class="container">
+                <div class="row ">
+                    <div class="col-md-2">
+                        <div class="form-group mb-3">
+                            <label>Sorting </label>
+                            <select class="form-select" name="sort">
+                                @foreach ($sorts as $sortKey => $sortValue)
+                                    <option @if ($sortBy == $sortKey) selected @endif value="{{ $sortKey }}">{{ $sortValue }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group mb-3">
+                            <button class="btn btn-primary mt-4" type="submit">Show</button>
+                            <a href="{{route('clients-index')}}" class="btn btn-secondary ms-1 mt-4">Reset</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </form>
 
         <table class="table">
@@ -44,18 +49,26 @@
                         <td>{{ $client->personalCodeNumber }} </td>
                         <td>€ {{ $client->accounts->sum('balance') }}</td>
                         <td>
-                            <select name="id">
-                                <option selected hidden disabled value="0">Choose account</option>
-                                @foreach ($client->accounts as $account)
-                                    <option value="{{ $account->client_id }}">€ {{$account->balance}} {{ $account->accountNumber }}</option>
-                                @endforeach
-                            </select>
+                            <form action="" method="get" id='form1'>
+                                <select name="account">
+                                    <option selected hidden disabled value="0">Choose account</option>
+                                    @foreach ($client->accounts as $account)
+                                        <option value="{{ $account->client_id }}">€ {{ $account->balance }}
+                                            {{ $account->accountNumber }}</option>
+                                    @endforeach
+                                </select>
+                            </form>
                         </td>
-                        <td><a href="{{ route('clients-edit', $client) }}" class="btn btn-secondary btn-sm"> Edit </a></td>
-                        <td><a href="" class="btn btn-success btn-sm"> Add funds </a></td>
-                        <td><a href="" class="btn btn-warning btn-sm"> Withdraw funds </a></td>
+                        <td><a href="{{ route('clients-edit', $client) }}" class="btn btn-secondary btn-sm"> Edit </a>
+                        </td>
+                        <td><button type="submit" form="form1" class="btn btn-success btn-sm"> Add funds </button>
+                        </td>
+                        <td><button type="submit" form="form1" id="withdraw" class="btn btn-warning btn-sm"> Withdraw
+                                funds
+                            </button></td>
                         <td><a href="" class="btn btn-danger btn-sm"> Delete </a></td>
                     </tr>
+                    @csrf
                 @empty
                     <tr>
                         <td>No clients</td>

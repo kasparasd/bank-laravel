@@ -29,6 +29,8 @@ Route::prefix('clients')->name('clients-')->group(function () {
 Route::prefix('accounts')->name('accounts-')->group(function(){
     Route::get('/create', [A::class, 'create'])->name('create');
     Route::post('/create', [A::class, 'store'])->name('store');
+    Route::get('/{account}/processFunds', [A::class, 'processFunds'])->name('processFunds');
+    // Route::post('/processFunds', [A::class, 'processFunds'])->name('processFunds');
 });
 
 Route::get('/', function () {
