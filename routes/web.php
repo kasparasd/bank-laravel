@@ -2,8 +2,8 @@
 
 use Faker\Guesser\Name;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ClientController AS C;
-use App\Http\Controllers\AccountController AS A;
+use App\Http\Controllers\ClientController as C;
+use App\Http\Controllers\AccountController as A;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,11 +26,15 @@ Route::prefix('clients')->name('clients-')->group(function () {
     // Route::get('/{client}/withdraw', [C::class, 'withdraw'])->name('withdraw');
 });
 
-Route::prefix('accounts')->name('accounts-')->group(function(){
+Route::prefix('accounts')->name('accounts-')->group(function () {
     Route::get('/create', [A::class, 'create'])->name('create');
     Route::post('/create', [A::class, 'store'])->name('store');
-    Route::get('/{account}/processFunds', [A::class, 'processFunds'])->name('processFunds');
-    // Route::post('/processFunds', [A::class, 'processFunds'])->name('processFunds');
+    // Route::get('/{account}/processFunds', [A::class, 'processFunds'])->name('processFunds');
+    Route::post('/action', [A::class, 'action'])->name('action');
+    Route::get('/{client}/{account}/addFunds', [A::class, 'addFunds'])->name('addFunds');
+    Route::post('/{client}/{accountNum}/addFunds', [A::class, 'addFundsPost'])->name('addFundsPost');
+    Route::get('/{client}/{account}/withdraw', [A::class, 'withdraw'])->name('withdraw');
+    Route::post('/{client}/{accountNum}/withdraw', [A::class, 'withdrawPost'])->name('withdrawPost');
 });
 
 Route::get('/', function () {

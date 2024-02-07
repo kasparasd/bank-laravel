@@ -8,6 +8,8 @@ use App\Models\Account;
 use App\Models\Client;
 use Database\Seeders\ClientSeeder;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
+use Illuminate\Routing\RouteGroup;
 
 class ClientController extends Controller
 {
@@ -18,30 +20,96 @@ class ClientController extends Controller
     {
         // $clients = Client::orderBy('lastname', 'desc')->get();
         // $clients = Client::all();
+
+        // $allClients = Client::all();
+
         $sortBy = $request->query('sort', '');
+        $perPageSelect = (int) $request->query('pages', 0);
+        $s = $request->query('s', '');
+        $sorts = Client::getSorts();
+        $filters = Client::getFIlters();
+        $sortBy = $request->query('sort', '');
+        $filterBy = $request->query('filter', '');
+
         $clients = Client::query();
+
+        $negativeFilter = function ($clients) {
+            return $clients->whereHas('accounts', function ($query) {
+                $query->select($query->raw('SUM(balance) as total'))
+                    ->havingRaw('total < 0');
+            });
+        };
+        $positiveFilter = function ($clients) {
+            return $clients->whereHas('accounts', function ($query) {
+                $query->select($query->raw('SUM(balance) as total'))
+                    ->havingRaw('total > 0');
+            });
+        };
+        $zeroFilter = function ($clients) {
+            return $clients->whereHas('accounts', function ($query) {
+                $query->select($query->raw('SUM(balance) as total'))
+                    ->havingRaw('total = 0');
+            });
+        };
+        $noneFilter = function ($clients) {
+            return $clients->whereDoesntHave('accounts');
+        };
+
+
+        $clients = match ($filterBy) {
+            'no_filter' => $clients,
+            'negative' => $negativeFilter($clients),
+            'zero' => $zeroFilter($clients),
+            'positive' => $positiveFilter($clients),
+            'none' => $noneFilter($clients),
+            default => $clients,
+        };
 
         $clients = match ($sortBy) {
             'name_asc' => $clients->orderBy('name'),
             'name_desc' => $clients->orderByDesc('name'),
             'lastname_asc' => $clients->orderBy('lastname'),
             'lastname_desc' => $clients->orderByDesc('lastname'),
-            'balance_asc' => $clients->orderBy('balance'),
-            'balance_desc' => $clients->orderByDesc('balance'),
+            'balance_asc' => $clients->withSum('accounts', 'balance')->orderBy('accounts_sum_balance'),
+            'balance_desc' => $clients->withSum('accounts', 'balance')->orderByDesc('accounts_sum_balance'),
             'accounts_asc' => $clients->withCount('accounts')->orderBy('accounts_count'),
             'accounts_desc' => $clients->withCount('accounts')->orderByDesc('accounts_count'),
             default => $clients->orderBy('lastname'),
         };
 
-        $clients = $clients->get();
+        if ($s) {
+            $keywords = explode(' ', $s);
+            if (count($keywords) > 1) {
+                $clients = $clients->where(function ($query) use ($keywords) {
+                    foreach (range(0, 1) as $index) {
+                        $query->orWhere('name', 'like', '%' . $keywords[$index] . '%')
+                            ->where('lastname', 'like', '%' . $keywords[1 - $index] . '%');
+                    }
+                });
+            } else {
+                $clients = $clients
+                    ->where(function ($query) use ($keywords) {
+                        $query->where('name', 'like', "%{$keywords[0]}%")
+                            ->orWhere('lastname', 'like', "%{$keywords[0]}%");
+                    });
+            }
+        }
 
-        $sorts = Client::getSorts();
-        $sortBy = $request->query('sort', '');
+        if ($perPageSelect > 0) {
+            $clients = $clients->paginate($perPageSelect)->WithQueryString();
+        } else {
+            $clients = $clients->get();
+        }
 
         return view('clients.index', [
             'clients' => $clients,
             'sorts' => $sorts,
-            'sortBy' => $sortBy
+            'sortBy' => $sortBy,
+            'perPageSelect' => $perPageSelect,
+            'filters' => $filters,
+            'filterBy' => $filterBy,
+            's' => $s,
+            // 'allClients'=>$allClients
         ]);
     }
 

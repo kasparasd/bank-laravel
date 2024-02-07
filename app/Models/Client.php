@@ -29,9 +29,21 @@ class Client extends Model
         'accounts_desc' => 'Accounts Qty DESC',
     ];
 
+    protected static $filters = [
+        'no_filter' => 'All',
+        'negative' => 'Negative balance',
+        'zero' => 'Zero balance',
+        'positive' => 'Positive balance',
+        'none' => 'No accounts'
+    ];
+
     public static function getSorts()
     {
         return self::$sorts;
+    }
+    public static function getFIlters()
+    {
+        return self::$filters;
     }
 
     public function accounts()

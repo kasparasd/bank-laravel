@@ -6,6 +6,7 @@ use App\Http\Requests\StoreAccountRequest;
 use App\Http\Requests\UpdateAccountRequest;
 use App\Models\Account;
 use App\Models\Client;
+use Illuminate\Http\Request;
 
 class AccountController extends Controller
 {
@@ -22,6 +23,78 @@ class AccountController extends Controller
     public function index()
     {
         //
+    }
+
+    public function action(Request $request)
+    {
+        $content = $request->all();
+        $client =  $content['client'];
+        $account =  $content['account'];
+
+        if ($content['type'] == 'addFunds') {
+
+            return redirect(route('accounts-addFunds', [$client, $account]));
+        }
+        if ($content['type'] == 'withdrawFunds') {
+
+            return redirect(route('accounts-withdraw', [$client, $account]));
+        }
+    }
+
+    public function addFunds(Request $request)
+    {
+        $clientNum = $request->client;
+        $accountNum = $request->account;
+
+        $client =  Client::where('id', $clientNum)->first();
+        $accountNumber = $client->accounts->where('id', $accountNum)->first()->accountNumber;
+        $accountBalance = $client->accounts->where('id', $accountNum)->first()->balance;
+
+
+        return view('accounts.addFunds', [
+            'client' => $client,
+            'accountNumber' => $accountNumber,
+            'accountNum' => $accountNum,
+            'accountBalance'=>$accountBalance
+        ]);
+    }
+    public function withdraw(Request $request)
+    {
+        $clientNum = $request->client;
+        $accountNum = $request->account;
+        $accounts = Account::all()->sortBy('client.name');
+
+        $client =  Client::where('id', $clientNum)->first();
+        $accountNumber = $client->accounts->where('id', $accountNum)->first()->accountNumber;
+        $accountBalance = $client->accounts->where('id', $accountNum)->first()->balance;
+
+
+        return view('accounts.withdrawFunds', [
+            'client' => $client,
+            'accountNumber' => $accountNumber,
+            'accountNum' => $accountNum,
+            'accountBalance'=>$accountBalance,
+            'accounts'=>$accounts
+        ]);
+    }
+
+    public function addFundsPost(Request $request)
+    {
+        $amount = $request->amount;
+        $clientNum = $request->client;
+        $accountNum = $request->accountNum;
+
+        $client =  Client::where('id', $clientNum)->first();
+        $accountBalance = $client->accounts->where('id', $accountNum)->first()->balance;
+        $newBalance = $accountBalance + $amount;
+
+        Client::where('id', $clientNum)->first()->accounts->where('id', $accountNum)->first()->update(['balance' => $newBalance]);
+        return redirect(route('accounts-addFunds', [$client, $accountNum]));
+        // dump($clientNum);
+        // dump($amount);
+        // dump($accountNum);
+        // // dd($request->all());
+        // dd($accountBalance);
     }
 
     /**
