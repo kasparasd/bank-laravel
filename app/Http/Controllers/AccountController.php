@@ -11,13 +11,6 @@ use Illuminate\Http\Request;
 class AccountController extends Controller
 {
     /**
-     * Return form to add money to account
-     */
-    public function processFunds()
-    {
-        return view('accounts.processFunds');
-    }
-    /**
      * Display a listing of the resource.
      */
     public function index()
@@ -31,12 +24,10 @@ class AccountController extends Controller
         $client =  $content['client'];
         $account =  $content['account'];
 
-        if ($content['type'] == 'addFunds') {
-
+        if ($content['type'] && $content['type'] == 'addFunds') {
             return redirect(route('accounts-addFunds', [$client, $account]));
         }
-        if ($content['type'] == 'withdrawFunds') {
-
+        if ($content['type'] && $content['type'] == 'withdrawFunds') {
             return redirect(route('accounts-withdraw', [$client, $account]));
         }
     }
@@ -55,8 +46,22 @@ class AccountController extends Controller
             'client' => $client,
             'accountNumber' => $accountNumber,
             'accountNum' => $accountNum,
-            'accountBalance'=>$accountBalance
+            'accountBalance' => $accountBalance
         ]);
+    }
+
+    public function addFundsPost(Request $request)
+    {
+        $amount = $request->amount;
+        $clientNum = $request->client;
+        $accountNum = $request->accountNum;
+
+        $client =  Client::where('id', $clientNum)->first();
+        $accountBalance = $client->accounts->where('id', $accountNum)->first()->balance;
+        $newBalance = $accountBalance + $amount;
+
+        Client::where('id', $clientNum)->first()->accounts->where('id', $accountNum)->first()->update(['balance' => $newBalance]);
+        return redirect(route('accounts-addFunds', [$client, $accountNum]));
     }
     public function withdraw(Request $request)
     {
@@ -73,12 +78,12 @@ class AccountController extends Controller
             'client' => $client,
             'accountNumber' => $accountNumber,
             'accountNum' => $accountNum,
-            'accountBalance'=>$accountBalance,
-            'accounts'=>$accounts
+            'accountBalance' => $accountBalance,
+            'accounts' => $accounts
         ]);
     }
 
-    public function addFundsPost(Request $request)
+    public function withdrawPost(Request $request)
     {
         $amount = $request->amount;
         $clientNum = $request->client;
@@ -86,16 +91,35 @@ class AccountController extends Controller
 
         $client =  Client::where('id', $clientNum)->first();
         $accountBalance = $client->accounts->where('id', $accountNum)->first()->balance;
-        $newBalance = $accountBalance + $amount;
+        $newBalance = $accountBalance - $amount;
 
         Client::where('id', $clientNum)->first()->accounts->where('id', $accountNum)->first()->update(['balance' => $newBalance]);
-        return redirect(route('accounts-addFunds', [$client, $accountNum]));
-        // dump($clientNum);
-        // dump($amount);
-        // dump($accountNum);
-        // // dd($request->all());
-        // dd($accountBalance);
+        return redirect(route('accounts-withdraw', [$client, $accountNum]));
     }
+
+    public function transferPost(Request $request)
+    {
+        // send
+        $amount = $request->amount;
+        $sendingClientId = $request->client;
+        $sendingAccountId = $request->accountNum;
+
+        //receive
+        $receivingAccountId = $request->receivingAccountId;
+
+        $sendingClient =  Client::where('id', $sendingClientId)->first();
+        $sendingAccountBalance = $sendingClient->accounts->where('id', $sendingAccountId)->first()->balance;
+        $newSendingBalance = $sendingAccountBalance - $amount;
+
+        $receivingAccountBalance = Account::where('id', $receivingAccountId)->first()->balance;
+        $newReceivingAccountBalance = $receivingAccountBalance + $amount;
+
+        Client::where('id', $sendingClientId)->first()->accounts->where('id', $sendingAccountId)->first()->update(['balance' => $newSendingBalance]);
+        Account::where('id', $receivingAccountId)->first()->update(['balance' => $newReceivingAccountBalance]);
+
+        return redirect(route('accounts-withdraw', [$sendingClient, $sendingAccountId]));
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -167,14 +191,6 @@ class AccountController extends Controller
      * Update the specified resource in storage.
      */
     public function update(UpdateAccountRequest $request, Account $account)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Account $account)
     {
         //
     }

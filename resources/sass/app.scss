@@ -6,3 +6,30 @@
 
 // Bootstrap
 @import 'bootstrap/scss/bootstrap';
+.delete {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+}
+
+.delete-container {
+    width: 400px;
+    height: 200px;
+    border-radius: 10px;
+    border: 2px solid crimson;
+    color: crimson;
+   text-align: center;
+}
+.delete-container h2 {
+    margin-top: 10px;
+}
+
+.delete-container div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 10px;
+}

@@ -10,6 +10,7 @@ use Database\Seeders\ClientSeeder;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\RouteGroup;
+use App\Services\PersonalCodeValidationService;
 
 class ClientController extends Controller
 {
@@ -160,11 +161,29 @@ class ClientController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Client $client)
+    public function delete(Request $request)
     {
-        //
+        $clientId = $request->client;
+        $client = Client::where('id', $clientId)->first();
+
+        return view('clients.delete', [
+            'client' => $client
+        ]);
     }
-    public function add(Client $client)
+    public function destroy(Request $request)
     {
+        $clientId = $request->client;
+        $client = Client::where('id', $clientId)->first();
+
+        if ($client->accounts->first()) {
+            dd('yra acc');
+        } else {
+            $client->where('id', $clientId)->delete();
+            return redirect(route('clients-index'));
+        }
+
+        return view('clients.delete', [
+            'client' => $client
+        ]);
     }
 }

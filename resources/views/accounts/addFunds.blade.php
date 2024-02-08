@@ -2,7 +2,7 @@
 @section('content')
     
 <a style="color: navy; text-decoration: none; margin-left: 70px; display:inline-block"
-href="{{ route('clients-index') }}">
+href="{{old('previous_url', url()->previous())}}">
 
     <div>
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left"

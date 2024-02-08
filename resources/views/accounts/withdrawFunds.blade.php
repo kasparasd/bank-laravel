@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
     <a style="color: navy; text-decoration: none; margin-left: 70px; display:inline-block"
-        href="{{ route('clients-index') }}">
+        href="{{old('previous_url', url()->previous())}}">
 
         <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left"
@@ -19,36 +19,36 @@
         <h5>Owner: {{ $client->name }} {{ $client->lastname }}, Current Balance: {{ $accountBalance }}</h5>
         <hr>
         <h2 class="mt-2">Withdraw funds</h2>
-        <form action="{{ route('accounts-withdraw', [$client, $accountNum]) }}" method="post">
+        <form action="{{ route('accounts-withdrawPost', [$client, $accountNum]) }}" method="post">
             <div class="form-group mt-3">
                 <label for="amount">Amount</label>
                 <input style="border-color: grey;" class="form-control funds-input" type="number" step="0.01"
                     name="amount">
             </div>
-            <button type="submit" class="btn btn-primary mt-4">Withdraw</button>
             @csrf
+            <button type="submit" class="btn btn-primary mt-4">Withdraw</button>
         </form>
         <h2 class="mt-2">Transfer funds to other client</h2>
-        <form action="{{ route('accounts-withdraw', [$client, $accountNum]) }}" method="post">
+        <form action="{{ route('accounts-transferPost', [$client, $accountNum]) }}" method="post">
             <div class="form-group mt-3">
                 <label for="amount">Amount</label>
                 <input style="border-color: grey;" class="form-control funds-input" type="number" step="0.01"
                     name="amount">
             </div>
             <div>
-                <label for="client">Make transfer to</label>
-                <select required style="border-color: grey;" class="form-select" name="client">
+                <label for="receivingAccountId">Make transfer to</label>
+                <select required style="border-color: grey;" class="form-select" name="receivingAccountId">
                     <option value hidden>Select client</option>
                     @foreach ($accounts as $account)
                         @if ($account->id != $accountNum)
-                            <option value="">{{ $account->client->name }} {{ $account->client->lastname }}
+                            <option value="{{$account->id}}">{{ $account->client->name }} {{ $account->client->lastname }}
                                 {{ $account->accountNumber }}</option>
                         @endif
                     @endforeach
                 </select>
             </div>
-            <button type="submit" class="btn btn-primary mt-4">Make transfer</button>
             @csrf
+            <button type="submit" class="btn btn-primary mt-4">Make transfer</button>
         </form>
     </div>
 @endsection
