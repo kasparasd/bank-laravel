@@ -6,16 +6,16 @@
     <form action="{{route('clients-store')}}" method="post">
         <div class="form-group">
             <label for="name">Name</label>
-            <input value="" class="form-control" type="text" name="name" value="">
+            <input value="{{old('name')}}" class="form-control" type="text" name="name" value="">
         </div>
         <div class="form-group">
             <label for="lastName">Last name</label>
-            <input value="" class="form-control" type="text" name="lastname" value="">
+            <input value="{{old('lastname')}}" class="form-control" type="text" name="lastname" value="">
         </div>
         
         <div class="form-group">
             <label for="personalCodeNumber">Personal code number</label>
-            <input value="" class=" form-control" type="text" name="personalCodeNumber" value="">
+            <input value="{{old('personalCodeNumber')}}" class=" form-control" type="text" name="personalCodeNumber" value="">
         </div>
         <button type="submit" class="btn btn-primary mt-4">Submit</button>
         @csrf

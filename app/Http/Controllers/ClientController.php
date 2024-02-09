@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\RouteGroup;
 use App\Services\PersonalCodeValidationService;
+use Illuminate\Validation\ValidationException;
 
 class ClientController extends Controller
 {
@@ -128,7 +129,7 @@ class ClientController extends Controller
     public function store(StoreClientRequest $request)
     {
         Client::create($request->all());
-        return redirect()->route('clients-index');
+        return redirect()->route('clients-index')->with('ok', 'New client created.');
     }
 
     /**
@@ -175,15 +176,12 @@ class ClientController extends Controller
         $clientId = $request->client;
         $client = Client::where('id', $clientId)->first();
 
-        if ($client->accounts->first()) {
-            dd('yra acc');
+        if ($client->accounts->sum('balance')) {
+            return redirect()->to(route('clients-index'))->withErrors(new \Illuminate\Support\MessageBag(['To delete a customer, the balance of the customer\'s accounts must be zero.']));
         } else {
+            $client->accounts()->delete();
             $client->where('id', $clientId)->delete();
             return redirect(route('clients-index'));
         }
-
-        return view('clients.delete', [
-            'client' => $client
-        ]);
     }
 }

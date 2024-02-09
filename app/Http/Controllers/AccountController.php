@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreAccountRequest;
 use App\Http\Requests\UpdateAccountRequest;
+use App\Http\Requests\addFundsRequest;
+use App\Http\Requests\withdrawFundsRequest;
 use App\Models\Account;
 use App\Models\Client;
 use Illuminate\Http\Request;
@@ -50,7 +52,7 @@ class AccountController extends Controller
         ]);
     }
 
-    public function addFundsPost(Request $request)
+    public function addFundsPost(addFundsRequest $request)
     {
         $amount = $request->amount;
         $clientNum = $request->client;
@@ -63,7 +65,7 @@ class AccountController extends Controller
         Client::where('id', $clientNum)->first()->accounts->where('id', $accountNum)->first()->update(['balance' => $newBalance]);
         return redirect(route('accounts-addFunds', [$client, $accountNum]));
     }
-    public function withdraw(Request $request)
+    public function withdraw(withdrawFundsRequest $request)
     {
         $clientNum = $request->client;
         $accountNum = $request->account;
@@ -83,7 +85,7 @@ class AccountController extends Controller
         ]);
     }
 
-    public function withdrawPost(Request $request)
+    public function withdrawPost(withdrawFundsRequest $request)
     {
         $amount = $request->amount;
         $clientNum = $request->client;

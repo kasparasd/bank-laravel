@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use App\validations\PersonalCodeValidation;
 
-class StoreClientRequest extends FormRequest
+class addFundsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,13 +23,13 @@ class StoreClientRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|min:3|max:64',
-            'lastname' => 'required|string|min:3|max:64',
-            'personalCodeNumber' => [
-                function ($attribute, $value, $fail) {
-                    PersonalCodeValidation::validate($attribute, $value, $fail);
-                },
-            ],
+            'amount'=>'gt:0'
+        ];
+    }
+    public function messages(): array
+    {
+        return [
+            'amount.gt'=>'Actions can only be performed with positive amounts.'
         ];
     }
 }

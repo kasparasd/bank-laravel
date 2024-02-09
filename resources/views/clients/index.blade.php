@@ -101,15 +101,15 @@
                                     <button type="submit" class="btn btn-success btn-sm ms-3" name="type"
                                         value="addFunds">Add
                                         Funds</button>
-                                    <button type="submit" class="btn btn-warning sbtn-sm ms-3" name="type"
+                                    <button type="submit" class="btn btn-warning btn-sm ms-3" name="type"
                                         value="withdrawFunds">Withdraw
                                         Funds</button>
                                     <a href="{{ route('clients-delete', $client->id) }}"
                                         class="btn btn-danger btn-sm ms-3">Delete</a>
                                 @else
-                                    <a class="btn btn-success btn-sm ms-3" name="type" value="addFunds">Add
+                                    <a class="btn btn-success btn-sm ms-3" value="addFunds">Add
                                         Funds</a>
-                                    <a class="btn btn-warning btn-sm ms-3" name="type" value="withdrawFunds">Withdraw
+                                    <a class="btn btn-warning btn-sm ms-3" value="withdrawFunds">Withdraw
                                         Funds</a>
                                     <a href="{{ route('clients-delete', $client->id) }}"
                                         class="btn btn-danger btn-sm ms-3">Delete</a>

@@ -83,6 +83,7 @@
 
         <main class="py-4">
             @include('layouts.error')
+            @include('layouts.ok')
             @yield('content')
         </main>
     </div>
