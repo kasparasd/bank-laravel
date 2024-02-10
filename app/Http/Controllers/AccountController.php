@@ -9,6 +9,7 @@ use App\Http\Requests\withdrawFundsRequest;
 use App\Models\Account;
 use App\Models\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class AccountController extends Controller
 {
@@ -63,9 +64,12 @@ class AccountController extends Controller
         $newBalance = $accountBalance + $amount;
 
         Client::where('id', $clientNum)->first()->accounts->where('id', $accountNum)->first()->update(['balance' => $newBalance]);
-        return redirect(route('accounts-addFunds', [$client, $accountNum]));
+        if (session(key: 'clients_url')) {
+            return redirect(session(key: 'clients_url'))->with('ok', 'Money successfully added.');;
+        }
+        return redirect(route('clients-index'));
     }
-    public function withdraw(withdrawFundsRequest $request)
+    public function withdraw(Request $request)
     {
         $clientNum = $request->client;
         $accountNum = $request->account;
@@ -93,13 +97,25 @@ class AccountController extends Controller
 
         $client =  Client::where('id', $clientNum)->first();
         $accountBalance = $client->accounts->where('id', $accountNum)->first()->balance;
+
         $newBalance = $accountBalance - $amount;
 
+        if ($newBalance < 0) {
+            return redirect()->back()->withErrors(['accountBalance' => 'There is not enough money in the account.']);
+        }
+
         Client::where('id', $clientNum)->first()->accounts->where('id', $accountNum)->first()->update(['balance' => $newBalance]);
-        return redirect(route('accounts-withdraw', [$client, $accountNum]));
+
+        if (session(key: 'clients_url')) {
+            return redirect(session(key: 'clients_url'))->with('ok', 'The funds have been successfully withdrawn.');
+        }
+
+        return redirect(route('clients-index'));
     }
 
-    public function transferPost(Request $request)
+
+
+    public function transferPost(withdrawFundsRequest $request)
     {
         // send
         $amount = $request->amount;
@@ -113,13 +129,21 @@ class AccountController extends Controller
         $sendingAccountBalance = $sendingClient->accounts->where('id', $sendingAccountId)->first()->balance;
         $newSendingBalance = $sendingAccountBalance - $amount;
 
+        if ($newSendingBalance < 0) {
+            return redirect()->back()->withErrors(['accountBalance' => 'There is not enough money in the account.']);
+        }
+
         $receivingAccountBalance = Account::where('id', $receivingAccountId)->first()->balance;
         $newReceivingAccountBalance = $receivingAccountBalance + $amount;
 
         Client::where('id', $sendingClientId)->first()->accounts->where('id', $sendingAccountId)->first()->update(['balance' => $newSendingBalance]);
         Account::where('id', $receivingAccountId)->first()->update(['balance' => $newReceivingAccountBalance]);
 
-        return redirect(route('accounts-withdraw', [$sendingClient, $sendingAccountId]));
+        if (session(key: 'clients_url')) {
+            return redirect(session(key: 'clients_url'))->with('ok', 'The money has been successfully transferred.');
+        }
+
+        return redirect(route('clients-index'));
     }
 
 
@@ -157,7 +181,6 @@ class AccountController extends Controller
         $accountNumber = generateAccountNumber();
 
         $clients = Client::all();
-        // dd($accountNumber);
         return view('accounts.create', [
             'clients' => $clients,
             'accountNumber' => $accountNumber
@@ -170,30 +193,6 @@ class AccountController extends Controller
     public function store(StoreAccountRequest $request)
     {
         Account::create($request->all());
-        return redirect()->route('accounts-create');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Account $account)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Account $account)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateAccountRequest $request, Account $account)
-    {
-        //
+        return redirect()->route('accounts-create')->with('ok', 'Account successfully created.');
     }
 }

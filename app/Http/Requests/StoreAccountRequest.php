@@ -21,8 +21,14 @@ class StoreAccountRequest extends FormRequest
      */
     public function rules(): array
     {
-        // dd($_REQUEST);
         return [
+            'client_id'=> 'required|gt:0'
+        ];
+    }
+    public function messages(): array
+    {
+        return [
+            'client_id.gt'=> 'Client is not selected'
         ];
     }
 }

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\RouteGroup;
 use App\Services\PersonalCodeValidationService;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
 
 class ClientController extends Controller
@@ -103,6 +104,8 @@ class ClientController extends Controller
             $clients = $clients->get();
         }
 
+        Session::put('clients_url', request()->fullUrl());
+
         return view('clients.index', [
             'clients' => $clients,
             'sorts' => $sorts,
@@ -156,7 +159,11 @@ class ClientController extends Controller
     public function update(UpdateClientRequest $request, Client $client)
     {
         $client->update($request->all());
-        return redirect()->route('clients-index');
+        if (session(key: 'clients_url')) {
+            return redirect(session(key: 'clients_url'))->with('ok', 'Client has been successfully updated.');
+        }
+
+        return redirect(route('clients-index'));
     }
 
     /**
@@ -175,13 +182,15 @@ class ClientController extends Controller
     {
         $clientId = $request->client;
         $client = Client::where('id', $clientId)->first();
-
-        if ($client->accounts->sum('balance')) {
-            return redirect()->to(route('clients-index'))->withErrors(new \Illuminate\Support\MessageBag(['To delete a customer, the balance of the customer\'s accounts must be zero.']));
-        } else {
-            $client->accounts()->delete();
-            $client->where('id', $clientId)->delete();
-            return redirect(route('clients-index'));
+        if (session(key: 'clients_url')) {
+            if ($client->accounts->sum('balance')) {
+                return redirect(session(key: 'clients_url'))->withErrors(['delete'=>'To delete a customer, the balance of the customer\'s accounts must be zero.']);
+            } else {
+                $client->accounts()->delete();
+                $client->where('id', $clientId)->delete();
+                return redirect(session(key: 'clients_url'));
+            }
         }
+        return redirect(route('clients-index'));
     }
 }

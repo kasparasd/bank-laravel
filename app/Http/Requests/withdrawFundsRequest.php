@@ -3,34 +3,19 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\validations\PersonalCodeValidation;
-use App\Models\Account;
 
 class withdrawFundsRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
+    public function authorize()
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
-    public function rules(): array
+    public function rules()
     {
         return [
-            'amount'=>'gt:0',
-        ];
-    }
-    public function messages(): array
-    {
-        return [
-            'amount.gt'=>'Actions can only be performed with positive amounts.'
+            'amount' => 'gt:0',
         ];
     }
 }
+
