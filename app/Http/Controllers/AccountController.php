@@ -39,10 +39,19 @@ class AccountController extends Controller
     {
         $clientNum = $request->client;
         $accountNum = $request->account;
-
         $client =  Client::where('id', $clientNum)->first();
-        $accountNumber = $client->accounts->where('id', $accountNum)->first()->accountNumber;
+
+        if (!$client) {
+            return abort(404);
+        }
+
+        $account = $client->accounts->where('id', $accountNum)->first();
+        if (!$account) {
+            return abort(404);
+        }
+        $accountNumber = $account->accountNumber;
         $accountBalance = $client->accounts->where('id', $accountNum)->first()->balance;
+
 
 
         return view('accounts.addFunds', [
@@ -76,7 +85,14 @@ class AccountController extends Controller
         $accounts = Account::all()->sortBy('client.name');
 
         $client =  Client::where('id', $clientNum)->first();
-        $accountNumber = $client->accounts->where('id', $accountNum)->first()->accountNumber;
+        if (!$client) {
+            return abort(404);
+        }
+        $account = $client->accounts->where('id', $accountNum)->first();
+        if (!$account) {
+            return abort(404);
+        }
+        $accountNumber = $account->accountNumber;
         $accountBalance = $client->accounts->where('id', $accountNum)->first()->balance;
 
 

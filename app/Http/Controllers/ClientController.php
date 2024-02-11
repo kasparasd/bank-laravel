@@ -185,7 +185,7 @@ class ClientController extends Controller
         $clientId = $request->client;
         $client = Client::where('id', $clientId)->first();
 
-        if ($client->accounts->sum('balance')) {
+        if ($client->accounts->max('balance') != 0 && $client->accounts->min('balance')!=0) {
             return redirect(route('clients-edit', $clientId))->withErrors(['delete' => 'To delete a customer, the balance of the customer\'s accounts must be zero.']);
         } else {
             $client->accounts()->delete();
