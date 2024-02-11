@@ -195,4 +195,18 @@ class AccountController extends Controller
         Account::create($request->all());
         return redirect()->route('accounts-create')->with('ok', 'Account successfully created.');
     }
+
+    public function destroy(Request $request)
+    {
+        if ($request->account_id) {
+
+            $accountId = $request->account_id;
+            if (Account::where('id', $accountId)->first()->balance != 0) {
+                return redirect()->back()->withErrors('To delete an account, its balance must be equal to 0.');
+            }
+            Account::where('id', $accountId)->first()->delete();
+            return redirect()->back()->with('ok', 'The account has been successfully deleted.');
+        }
+        return redirect()->back();
+    }
 }

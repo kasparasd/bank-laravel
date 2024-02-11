@@ -82,7 +82,7 @@
                         <td>
                             <form action="{{ route('accounts-action', ['client' => $client->id]) }}" method="post">
                                 @if (count($client->accounts) > 0)
-                                    <select required name="account" style="width: 300px">
+                                    <select class="form-select" required name="account" style="width: 300px; display: inline-block; border: 1px solid rgba(128, 128, 128, 0.567)">
                                         @if (count($client->accounts) > 1)
                                             <option value hidden>Select account</option>
                                         @endif
@@ -96,7 +96,7 @@
                                 @endif
                                 @csrf
                                 <a class="btn btn-secondary btn-sm ms-3"
-                                    href="{{ route('clients-edit', $client->id) }}">Edit</a>
+                                href="{{ route('clients-edit', $client->id) }}">Edit</a>
                                 @if (count($client->accounts) > 0)
                                     <button type="submit" class="btn btn-success btn-sm ms-3" name="type"
                                         value="addFunds">Add
@@ -104,16 +104,8 @@
                                     <button type="submit" class="btn btn-warning btn-sm ms-3" name="type"
                                         value="withdrawFunds">Withdraw
                                         Funds</button>
-                                    <a href="{{ route('clients-delete', $client->id) }}"
-                                        class="btn btn-danger btn-sm ms-3">Delete</a>
-                                @else
-                                    <a class="btn btn-success btn-sm ms-3" value="addFunds">Add
-                                        Funds</a>
-                                    <a class="btn btn-warning btn-sm ms-3" value="withdrawFunds">Withdraw
-                                        Funds</a>
-                                    <a href="{{ route('clients-delete', $client->id) }}"
-                                        class="btn btn-danger btn-sm ms-3">Delete</a>
                                 @endif
+                               
 
                             </form>
                         </td>

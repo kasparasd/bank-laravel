@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-    <div class="col-6" style="margin: auto;  padding: 2rem; border-radius: 15px; border: 1px solid black;">
+    <div class="col-6" style="margin: auto;  padding: 2rem; border: 1px solid grey;">
         <h2 class="mb-4">Create new bank account</h2>
         <form action="{{ route('accounts-store') }}" method="post">
             <div class="form-group">
@@ -9,7 +9,7 @@
                 <input type="balance" name="balance" value="0" hidden>
             </div>
             <div class="form-group">
-                <select name="client_id">
+                <select class="form-select mt-3" name="client_id" style="width: 300px; display: inline-block; border: 1px solid rgba(128, 128, 128, 0.567)">
                     <option value="0">Select client</option>
                     @foreach ($clients as $client)
                         <option value="{{ $client->id }}">{{ $client->name }}
@@ -17,7 +17,7 @@
                     @endforeach
                 </select>
             </div>
-            <button type="submit" class="btn btn-primary mt-4">Submit</button>
+            <button type="submit" class="btn btn-primary mt-4">Create</button>
             @csrf
         </form>
 

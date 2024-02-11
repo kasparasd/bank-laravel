@@ -148,8 +148,10 @@ class ClientController extends Controller
      */
     public function edit(Client $client)
     {
+        $accounts = $client->accounts()->get();
         return view('clients.edit', [
-            'client' => $client
+            'client' => $client,
+            'accounts' => $accounts
         ]);
     }
 
@@ -182,15 +184,13 @@ class ClientController extends Controller
     {
         $clientId = $request->client;
         $client = Client::where('id', $clientId)->first();
-        if (session(key: 'clients_url')) {
-            if ($client->accounts->sum('balance')) {
-                return redirect(session(key: 'clients_url'))->withErrors(['delete'=>'To delete a customer, the balance of the customer\'s accounts must be zero.']);
-            } else {
-                $client->accounts()->delete();
-                $client->where('id', $clientId)->delete();
-                return redirect(session(key: 'clients_url'));
-            }
+
+        if ($client->accounts->sum('balance')) {
+            return redirect(route('clients-edit', $clientId))->withErrors(['delete' => 'To delete a customer, the balance of the customer\'s accounts must be zero.']);
+        } else {
+            $client->accounts()->delete();
+            $client->where('id', $clientId)->delete();
+            return redirect(session(key: 'clients_url'))->with('ok', 'Client successfully deleted.');
         }
-        return redirect(route('clients-index'));
     }
 }

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
     
-<div class="col-6" style="margin: auto;  padding: 2rem; border-radius: 15px; border: 1px solid black;">
+<div class="col-6" style="margin: auto;  padding: 2rem; border: 1px solid grey;">
     <h2 class="mb-4">Create new client</h2>
     <form action="{{route('clients-store')}}" method="post">
         <div class="form-group">

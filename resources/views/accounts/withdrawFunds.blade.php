@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-    <div class="col-7" style="margin: auto;  padding: 2rem; border-radius: 15px; border: 1px solid black;">
+    <div class="col-7" style="margin: auto;  padding: 2rem; border: 1px solid grey;">
         <h2 class="mb-4" style="color: crimson;"><b>WITHDRAW FUNDS</b></h2>
         <h4>Bank account number: {{ $accountNumber }} <b> </b></h4>
         <h5>Owner: {{ $client->name }} {{ $client->lastname }}, Current Balance: {{ $accountBalance }}</h5>
