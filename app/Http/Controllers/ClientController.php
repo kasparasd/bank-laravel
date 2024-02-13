@@ -13,6 +13,7 @@ use Illuminate\Routing\RouteGroup;
 use App\Services\PersonalCodeValidationService;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
+use App\Services\PersonalCodeService;
 
 class ClientController extends Controller
 {
@@ -21,11 +22,6 @@ class ClientController extends Controller
      */
     public function index(Request $request)
     {
-        // $clients = Client::orderBy('lastname', 'desc')->get();
-        // $clients = Client::all();
-
-        // $allClients = Client::all();
-
         $sortBy = $request->query('sort', '');
         $perPageSelect = (int) $request->query('pages', 0);
         $s = $request->query('s', '');
@@ -114,7 +110,6 @@ class ClientController extends Controller
             'filters' => $filters,
             'filterBy' => $filterBy,
             's' => $s,
-            // 'allClients'=>$allClients
         ]);
     }
 
@@ -131,17 +126,17 @@ class ClientController extends Controller
      */
     public function store(StoreClientRequest $request)
     {
+        $isCodeValid = (new PersonalCodeService($request->personalCodeNumber))->validCode();
+
+        if (!$isCodeValid) {
+            return redirect()->back()->withInput()->withErrors(['personalCode' => 'Personal code is not correct']);
+        } else if (Client::where('personalCodeNumber', '=', $request->personalCodeNumber)->exists()) {
+            return redirect()->back()->withInput()->withErrors(['personalCode' => 'Please check your personal code number. It\'s already registered in our system.']);
+        }
         Client::create($request->all());
         return redirect()->route('clients-index')->with('ok', 'New client created.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Client $client)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.
@@ -185,7 +180,7 @@ class ClientController extends Controller
         $clientId = $request->client;
         $client = Client::where('id', $clientId)->first();
 
-        if ($client->accounts->max('balance') != 0 && $client->accounts->min('balance')!=0) {
+        if ($client->accounts->max('balance') != 0 && $client->accounts->min('balance') != 0) {
             return redirect(route('clients-edit', $clientId))->withErrors(['delete' => 'To delete a customer, the balance of the customer\'s accounts must be zero.']);
         } else {
             $client->accounts()->delete();

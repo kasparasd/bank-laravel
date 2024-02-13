@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\validations\PersonalCodeValidation;
+use App\Providers\PersonalCodeServiceProvider as C;
 
 class StoreClientRequest extends FormRequest
 {
@@ -25,11 +26,6 @@ class StoreClientRequest extends FormRequest
         return [
             'name' => 'required|string|min:3|max:64',
             'lastname' => 'required|string|min:3|max:64',
-            'personalCodeNumber' => [
-                function ($attribute, $value, $fail) {
-                    PersonalCodeValidation::validate($attribute, $value, $fail);
-                },
-            ],
         ];
     }
 }

@@ -1,9 +1,7 @@
 @extends('layouts.app')
-
+@inject('code', 'App\Services\PersonalCodeService')
 @section('content')
     <div style="width: 90%; margin: auto;">
-
-
         <form action="" method="get">
             <div class="container">
                 <div class="row ">
