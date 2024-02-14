@@ -8,10 +8,10 @@ use App\Http\Controllers\HomeController as H;
 
 Route::get('/', [H::class, 'index']);
 
-Route::group(['middleware' => 'auth'], function () {
+// Route::group(['middleware' => 'auth'], function () {
 
     Route::prefix('clients')->name('clients-')->group(function () {
-        Route::get('/', [C::class, 'index'])->name('index');
+        Route::get('/', [C::class, 'index'])->middleware(['role:admin'])->name('index');
         Route::get('/create', [C::class, 'create'])->name('create');
         Route::post('/create', [C::class, 'store'])->name('store');
         Route::get('/{client}/edit', [C::class, 'edit'])->name('edit');
@@ -31,5 +31,5 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/{client}/{accountNum}/transfer', [A::class, 'transferPost'])->name('transferPost');
         Route::delete('/destroy', [A::class, 'destroy'])->name('destroy');
     });
-});
+// });
 Auth::routes(['register' => false]);

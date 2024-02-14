@@ -1,3 +1,4 @@
+@inject('role', 'App\Services\RoleService')
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
@@ -25,7 +26,7 @@
                 <a class="navbar-brand" href="{{ url('/') }}">
                     Uni<span style="color: crimson">Banca</span>
                 </a>
-                @if (Auth::check())
+                @if($role->show('admin'))
                 <a class="navbar-brand" href="{{ route('clients-index') }}">
                     Clients
                 </a>
