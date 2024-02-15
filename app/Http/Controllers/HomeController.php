@@ -41,15 +41,15 @@ class HomeController extends Controller
             ],
             [
                 "name" => "Total balance",
-                "stat" => $totalBalance
+                "stat" => '€ ' . $totalBalance
             ],
             [
                 "name" => "Largest account",
-                "stat" => $biggestBalanceInAccount
+                "stat" => '€ ' . $biggestBalanceInAccount
             ],
             [
                 "name" => "Average account balance",
-                "stat" => $averageBalance
+                "stat" => '€ ' . $averageBalance
             ],
             [
                 "name" => "Zero balance accounts",

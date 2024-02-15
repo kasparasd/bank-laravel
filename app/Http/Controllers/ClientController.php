@@ -17,6 +17,24 @@ use App\Services\PersonalCodeService;
 
 class ClientController extends Controller
 {
+    public function taxes(Client $clients)
+    {
+        // dd($clients->all()[0]->accounts()->first()->balance);
+
+        foreach ($clients->all() as $client) {
+            if ($client->accounts()->first()) {
+
+                $balance = $client->accounts()->first()->balance;
+                $newBalance = $balance - 5;
+
+                $client->accounts()->first()->update(array('balance' => $newBalance));
+            }
+        }
+        if (session(key: 'clients_url')) {
+            return redirect(session(key: 'clients_url'))->with('ok', '€ 5 fee deducted');
+        }
+        return redirect(route('clients-index'));
+    }
     /**
      * Display a listing of the resource.
      */
