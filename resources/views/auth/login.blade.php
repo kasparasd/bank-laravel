@@ -67,6 +67,10 @@
                     </form>
                 </div>
             </div>
+            <div class="mt-3">
+                <h6 class="d-flex justify-content-center">Email: admin@gmail.com</h6>
+                <h6 class="d-flex justify-content-center">Password: 12345678</h6>
+            </div>
         </div>
     </div>
 </div>

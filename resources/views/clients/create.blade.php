@@ -17,7 +17,10 @@
             <label for="personalCodeNumber">Personal code number</label>
             <input value="{{old('personalCodeNumber')}}" class=" form-control" type="text" name="personalCodeNumber" value="">
         </div>
+        <div>
+        </div>
         <button type="submit" class="btn btn-primary mt-4">Submit</button>
+        <h6 class="mt-3"><a href="https://www.runa.lt/useful/asmens_kodas" target="_blank">Personal code generator</a></h6>
         @csrf
     </form>
     

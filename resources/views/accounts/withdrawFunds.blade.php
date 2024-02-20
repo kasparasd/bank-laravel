@@ -30,6 +30,7 @@
                         @if ($account->id != $accountNum)
                             <option value="{{ $account->id }}">{{ $account->client->name }}
                                 {{ $account->client->lastname }}
+                                € {{ $account->balance }}
                                 {{ $account->accountNumber }}</option>
                         @endif
                     @endforeach
