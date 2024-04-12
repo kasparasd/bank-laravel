@@ -16,7 +16,7 @@
 - php artisan key:generate
 - php artisan migrate
 - php artisan db:seed
-- npm start
+- npm run dev
 - php artisan serve
 - go to 127.0.0.1:8000
 - Login details: Email: admin@gmail.com Password: 12345678
